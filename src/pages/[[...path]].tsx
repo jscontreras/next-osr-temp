@@ -47,18 +47,30 @@ export default function Page(props: Readonly<{ posts: Post[] }>) {
   );
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  // Hardcoded paths for now
-  const paths = [
-    { params: { path: [] } }, // "/"
-    { params: { path: ['en'] } }, // "/en"
-    { params: { path: ['en', 'blog-1'] } }, // "/en/blog-1"
-    { params: { path: ['blog-1'] } }, // "/blog-1"
-  ];
+export const getStaticPaths: GetStaticPaths = async (context) => {
+  if (process.env.NODE_ENV !== 'development') {
+    // Hardcoded paths for now
+    const paths =
+      context.locales
+        ?.filter((locale) => locale !== 'default')
+        .flatMap((locale) => {
+          return ['/', '/blog-1', '/blog-2'].map((route) => ({
+            params: {
+              path: route === '/' ? [] : [route.slice(1)],
+            },
+            locale,
+          }));
+        }) || [];
+
+    return {
+      paths,
+      fallback: false, // Set to 'blocking' if you want to generate new paths on demand
+    };
+  }
 
   return {
-    paths,
-    fallback: false, // Set to 'blocking' if you want to generate new paths on demand
+    paths: [],
+    fallback: 'blocking',
   };
 };
 
