@@ -1,8 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import localFont from 'next/font/local';
-import { client } from '@/sanity/lib/client';
-
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-geist-sans',
@@ -25,14 +23,14 @@ interface IParams extends ParsedUrlQuery {
   path?: string[];
 }
 
-export default function Page(props: Readonly<{ posts: Post[] }>) {
+export default function Page(props: Readonly<{ posts: Post[], path:string[] }>) {
   return (
     <div
       className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
     >
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <div className="w-full">
-          <h2 className="text-xl font-bold mb-4">Posts</h2>
+          <h2 className="text-xl font-bold mb-4">Posts Content: {`${props.path.join('/')}`}</h2>
           <ul className="space-y-4">
             {props.posts.map((post) => (
               <li key={post._id} className="p-4 border rounded">
@@ -48,7 +46,7 @@ export default function Page(props: Readonly<{ posts: Post[] }>) {
 }
 
 export const getStaticPaths: GetStaticPaths = async (context) => {
-  if (process.env.NODE_ENV !== 'development') {
+ // if (process.env.NODE_ENV !== 'development') {
     // Hardcoded paths for now
     const paths =
       context.locales
@@ -64,14 +62,8 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 
     return {
       paths,
-      fallback: false, // Set to 'blocking' if you want to generate new paths on demand
+      fallback: 'blocking', // Set to 'blocking' if you want to generate new paths on demand
     };
-  }
-
-  return {
-    paths: [],
-    fallback: 'blocking',
-  };
 };
 
 export const getStaticProps: GetStaticProps<
@@ -79,8 +71,8 @@ export const getStaticProps: GetStaticProps<
   IParams
 > = async ({ params }) => {
   const path = params?.path || [];
-  const query = `*[_type == "post"]`;
-  const posts = await client.fetch(query);
+  const rnd = Math.trunc(Math.random() * 100);
+  const posts: Post[] = [{ title: `${rnd}`, _id: `${rnd}` }]
 
   return {
     props: {

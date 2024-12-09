@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     defaultLocale: 'default',
     localeDetection: false,
   },
+  trailingSlash: false,
 };
 
 export default nextConfig;
