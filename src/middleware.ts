@@ -16,17 +16,6 @@ export default async function middleware(req: NextRequest) {
   const urlLocale = extractLocaleFromUrl(req.url);
 
   if (urlLocale) {
-    // if (!req.headers.has('x-Routed')) {
-    //   const newURl = `/blog/${urlLocale}${request.nextUrl.pathname.replace(/\/\/$/g, '/')}${request.nextUrl.search}`
-    //   const nextUrl = new URL(
-    //     newURl,
-    //     request.url,
-    //   );
-    //   const response =  NextResponse.rewrite(nextUrl, { request });
-
-    //   response.headers.set('x-Routed', 'true');
-    //   return response;
-    // }
     return NextResponse.next();
   } else {
     return NextResponse.redirect(
